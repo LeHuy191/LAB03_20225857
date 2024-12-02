@@ -1,11 +1,43 @@
-C1: Is Java a "Pass by Value" or "Pass by Reference" language?
-==>> Java là ngôn ngữ lập trình "Pass by Value". Trong Java, khi bạn truyền một tham số cho một phương thức, giá trị của tham số được sao chép và truyền vào phương thức. Điều này có nghĩa là nếu bạn thay đổi giá trị của tham số bên trong phương thức, giá trị của biến gọi phương thức không bị ảnh hưởng.
+Câu hỏi: Ngoài ra, để so sánh các mục trong giỏ hàng, thay vì sử dụng Comparator, chúng ta có thể sử dụng giao diện Comparable và ghi đè phương thức compareTo(). Bạn có thể tham khảo tài liệu Java để xem thông tin về giao diện này.
+Giả sử chúng ta đang sử dụng phương pháp tiếp cận giao diện Comparable này.
+- Lớp nào nên triển khai giao diện Comparable?
+- Trong các lớp đó, bạn nên triển khai phương thức compareTo() như thế nào để phản ánh thứ tự mà chúng ta muốn?
+- Chúng ta có thể có hai quy tắc sắp xếp của mục (theo tiêu đề rồi đến giá và theo giá rồi đến tiêu đề) nếu chúng ta sử dụng phương pháp tiếp cận giao diện Comparable này không?
+- Giả sử DVD có quy tắc sắp xếp khác với các loại phương tiện khác, đó là theo tiêu đề, sau đó giảm dần độ dài, sau đó là giá. Bạn sẽ sửa đổi mã của mình như thế nào để cho phép điều này?
 
-C2: After the call of swap(jungleDVD, cinderellaDVD) why does the title of these two objects still remain?
-==>> Sau khi thực hiện phương thức swap(jungleDVD, cinderellaDVD), tiêu đề của hai đối tượng vẫn giữ nguyên vì trong Java, tham số được truyền vào phương thức là giá trị của đối tượng, không phải là tham chiếu đến đối tượng. Khi ta thay đổi giá trị của tham số bên trong phương thức (như việc đổi chỗ giữa o1 và o2), sự thay đổi này không ảnh hưởng đến giá trị của các đối tượng gốc.
+Trả lời: 
+1) Lớp "Media"
+2)Cách triển khai của tôi:
+@Override
+public int compareTo(Media other) {
+    int titleComparison = this.getTitle().compareTo(other.getTitle());
+    if (titleComparison != 0) {
+        return titleComparison; 
+    } else {
+        return Double.compare(this.getCost(), other.getCost()); 
+    }
+}
+3)Không vì giao điện Comparable giả định rằng chỉ có một thứ tự tự nhiên duy nhất cho các đối tượng so sánh 
+4)Chúng ta có thể ghi đè phương thức compareTo trong lớp Disc để phản ánh quy tắc sắp xếp mới.
+@Override
+    public int compareTo(Media other) {
+        if (other instanceof Disc) {
+            Disc otherDVD = (Disc) other;
+            int titleComparison = this.getTitle().compareTo(otherDVD.getTitle());
+            if (titleComparison != 0) {
+                // Compare by title
+                return titleComparison;
+            } else {
+                int lengthComparison = Integer.compare(otherDVD.getLength(), this.getLength());
+                if (lengthComparison != 0) {
+                    return lengthComparison;
+                } else {
+                    // Compare by cost
+                    return Double.compare(this.getCost(), otherDVD.getCost());
+                }
+            }
+        } else {
+            return super.compareTo(other);
+        }
+    }
 
-C3: After the call of changeTitle(jungleDVD, cinderellaDVD.getTitle()) why is the title of the JungleDVD changed?
-==>> Sau khi gọi changeTitle(jungleDVD, cinderellaDVD.getTitle()), tiêu đề của jungleDVD bị thay đổi vì trong phương thức changeTitle, ta thực hiện thay đổi trực tiếp trên đối tượng dvd (được truyền vào phương thức) bằng cách gọi dvd.setTitle(title). Điều này ảnh hưởng trực tiếp đến đối tượng gốc được truyền vào phương thức.
-
-C4: Write a toString() method for the DigitalVideoDisc class. What should be the return type of this method?
-==>> Kiểu trả về phải là String.
