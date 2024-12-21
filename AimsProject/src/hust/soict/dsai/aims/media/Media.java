@@ -1,18 +1,24 @@
 package hust.soict.dsai.aims.media;
+
+import java.time.Duration;
 import java.util.Comparator;
-//Media là lớp trừu tượng
+
+import hust.soict.dsai.aims.exception.PlayerException;
+
 public abstract class Media implements Comparable<Media> {
-	//So sánh Media
-	public static final Comparator<Media> COMPARE_BY_COST_TITLE = new MediaComparatorByCostTitle();
+
     public static final Comparator<Media> COMPARE_BY_TITLE_COST = new MediaComparatorByTitleCost();
-        
-    private static int nbMedia = 0;// biến đếm số lượng đtuong Media được tạo ra
+    public static final Comparator<Media> COMPARE_BY_COST_TITLE = new MediaComparatorByCostTitle();
+
+    
+    private static int nbMedia = 0;
     private int id;
+
     private String title;
     private String category;
     private float cost;
 
-// Constructor 
+    // Constructor 
     public Media(String title) {
         this.title = title;
 		this.id = ++nbMedia;
@@ -29,7 +35,7 @@ public abstract class Media implements Comparable<Media> {
         this.id = ++nbMedia;
     }
     
-// Getter and setter method
+    // Getter method
     public int getId() {
         return id;
     }
@@ -43,6 +49,7 @@ public abstract class Media implements Comparable<Media> {
         return cost;
     }
 
+    // Setter method
     public void setTitle(String title) {
         this.title = title;
     }
@@ -55,7 +62,16 @@ public abstract class Media implements Comparable<Media> {
     public void play() {
         System.out.println("Playing media");
     }
+    
+    public String playGUI() throws PlayerException {
+        return "Playing media";
+    }
 
+    public String formatDuration(int durationInSeconds) {
+        Duration duration = Duration.ofSeconds(durationInSeconds);
+        return String.format("%02d:%02d", duration.toMinutes(), duration.minusMinutes(duration.toMinutes()).getSeconds());
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
